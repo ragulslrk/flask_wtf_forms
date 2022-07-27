@@ -1,3 +1,4 @@
+import re
 from flask import *
 from flask_wtf import FlaskForm
 from wtforms import  *
@@ -9,9 +10,22 @@ class forms(FlaskForm):
     name=StringField('Please Enter Your Name',validators=[DataRequired()])
     submit=SubmitField()
 
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 def home():
-    return
+    form=forms()
+    if request.method =="POST":
+        if  form.validate_on_submit():
+            return redirect(url_for('dashboard',data=form.name.data))
+        return render_template('form.html',form=form)
+        
+    else:
+        return render_template('form.html',form=form)
+    
 
+
+#route for dashboard page
+@app.route('/dashboard/<data>')
+def dashboard(data):
+    return render_template('dashboard.html',name=data)
 if __name__== '__main__':
-    app.run()
+    app.run(debug=True)
